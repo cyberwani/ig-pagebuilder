@@ -1,0 +1,668 @@
+/**
+ * @version    $Id$
+ * @package    IG Pagebuilder
+ * @author     InnoGears Team <support@www.innogears.com>
+ * @copyright  Copyright (C) 2012 www.innogears.com. All Rights Reserved.
+ * @license    GNU/GPL v2 or later http://www.gnu.org/licenses/gpl-2.0.html
+ *
+ * Websites: http://www.www.innogears.com
+ * Technical Support:  Feedback - http://www.www.innogears.com
+*/
+
+/* === SETING MODAL === */
+#modalOptions #ig_option_tab {
+    border-radius: 0;
+}
+#modalOptions #preview_container {
+    max-height: 200px;
+    position: relative;
+}
+#modalOptions #preview_container .shortcode_preview_iframe {
+    height: 200px;
+    width: 100%;
+    background-color: #fff;
+    border: 1px solid #ddd;
+}
+#modalOptions #ig_overlay_loading {
+    z-index: 2;
+    position: absolute;
+    height: 200px;
+    border: 1px solid #ddd;
+}
+#modalOptions .jsn-items-list {
+    height: 250px;
+}
+#modalOptions .jsn-iconselector .jsn-items-list {
+    height: 200px;
+}
+#modalOptions .drop-control-margin{
+    margin-left:0px !important;
+}
+#modalOptions .preview-empty {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    background-color: #fff;
+    top: 0;
+    z-index: 9;
+}
+#modalOptions .preview-empty .jsn-bglabel {
+    padding: 65px 20px;
+}
+#modalOptions .controls .mceEditor,
+#modalOptions .controls input[type="button"] {
+    float: none;
+    margin-right: 0;
+    padding-top: 0;
+}
+#modalOptions .mceStatusbar  span {
+    padding-top: 0 !important;
+}
+#modalOptions .large_image_wrapper {
+    float:left;
+}
+#modalOptions .image_loader{
+    background: url("../images/icons-16/icon-16-loading-circle.gif") no-repeat scroll 50% 50% transparent;
+    display: none;
+    height: 30px;
+    width: 30px;
+    float: left;
+}
+#modalOptions .controls .wp-picker-container input:first-child {
+}
+#modalOptions .controls .wp-picker-container span:first-child {
+    padding-top:0px;
+}
+#modalOptions .controls .input-pixel {
+    font-size: 15px;
+    line-height: 28px;
+}
+#modalOptions .list-item-extra {
+    padding: 0 20px;
+}
+#modalOptions .hide-element {
+    display: none;
+}
+#modalOptions div[data-depend-element="param-ig_cl_source"] div.select2-container-multi, #modalOptions div[data-depend-element="param-ig_cl_source"] div.select2-container-multi ul.select2-choices{
+    height: 60px !important;
+    width: 100% !important;
+}
+
+/* === shortcode_inner_wrapper === */
+#shortcode_inner_wrapper {
+    padding: 15px;
+    height: 170px;
+    box-sizing:border-box;
+    -moz-box-sizing:border-box;
+}
+#shortcode_inner_wrapper.jsn-bootstrap ul,
+#shortcode_inner_wrapper .jsn-bootstrap ol {
+    list-style: square;
+}
+
+/* === JSN BOOTSTRAP === */
+.jsn-bootstrap .hidden{
+    display: none !important;
+}
+.jsn-bootstrap .row-fluid [class^="span"]:nth-of-type(1) {
+    margin-left: 0;
+}
+#form-container .jsn-item .jsn-icon-loading{
+    position: absolute;
+    right: 10px;
+    top: 10px;
+}
+.jsn-bootstrap #modalOptions .modal-footer{
+    margin-top: 20px;
+}
+.ig_color_picker_cw{
+    display: none;
+}
+.jsn-bootstrap .ig_hidden_depend, .jsn-bootstrap .ig_hidden_depend2, .jsn-bootstrap .ig_hidden_depend_flag{
+    display: none;
+}
+.jsn-bootstrap .shortcode-item{
+    display: block;
+}
+.jsn-bootstrap .shortcode-item:hover{
+    text-decoration: none;
+}
+.jsn-bootstrap .layout-element{
+    float: left;
+    padding-right: 5px;
+}
+.jsn-bootstrap .checkbox {
+    background-color: transparent;
+}
+.jsn-bootstrap .general-action.no-label .controls{
+    margin-left: 0;
+}
+.jsn-bootstrap #form-design-content {
+    border-color: #ccc;
+}
+
+.jsn-fontFace .select2-choice span:first-child {
+    padding-top:0px !important;
+}
+.jsn-modal-preview-indicator{
+    background: url("../images/icons-24/icon-24-dark-loading-circle.gif") no-repeat scroll center center #000000;
+    border-radius: 3px 3px 3px 3px;
+    content: " ";
+    height: 40px;
+    left: 50%;
+    margin-top: -25px;
+    opacity: 0.7;
+    position: relative;
+    top: -90px;
+    width: 40px;
+}
+
+/* === OTHER === */
+#wp-content-wrap.panels-active .ig-switch-panels {
+    background: #f7f7f7;
+    border-color: #CCC #CCC #f7f7f7 #CCC;
+    color: #333;
+    z-index: 10;
+}
+.postbox h3{
+    background: none;
+}
+.ig-dialog{
+    z-index: 10001 !important;
+}
+.ig-placeholder{
+    opacity: 0.5;
+}
+.ui-resizable-helper{
+    background-color: #FCF8E3;
+    opacity: 0.6;
+}
+.ui-state-highlight{
+    position: relative;
+    display: block;
+    height: 16px;
+}
+.icon-selected{
+    background-color: rgba(255,0,0,.25);
+}
+
+/* === tab === */
+.tabbable li{
+    margin-bottom: -1px!important;
+}
+.tabs-below > .nav-tabs > li {
+    margin-top: -1px!important;
+    margin-bottom: 0;
+}
+
+/* === action button === */
+.ig_action_btn .control-group{
+    margin-bottom: 0 !important;
+}
+.ig_action_btn .control-group button{
+    z-index: 1000;
+    position: relative;
+}
+/* === icons list === */
+.ig-the-icons{
+    height: 150px;
+    overflow-y: auto;
+}
+#fancybox-outer{
+    background: url("../images/icons-24/icon-24-loading-circle.gif") no-repeat scroll center center #FFF;
+}
+/** table shortcode **/
+.table_wrapper{
+    width: 100%;
+}
+.table_action{
+    margin-right: 10px !important;
+}
+.table_element .controls{
+    margin-top: 20px;
+}
+.table_sc_action{
+    border: none !important;
+}
+.table_sc_action td{
+    border: none !important;
+    text-align: center !important;
+}
+#table_content{
+    border-bottom: none;
+    border-right: none;
+    border-top: none;
+}
+#table_content th{
+    border-top: 1px solid #ddd;
+    -webkit-border-radius:0;-moz-border-radius:0;border-radius:0;
+    min-width: 38px;
+}
+#table_content th *{
+    font-weight: bold;
+}
+.ig-delete-column-td
+{
+    border: none;
+    border-top: none !important;
+    background: #fff;
+    vertical-align: middle;
+    height: 39px;
+    width: 30px;
+}
+#table_content tr:nth-child(1){
+    background: #ececec;
+}
+#table_content tr:last-child{
+    border-top: 1px solid #ddd;
+}
+#table_content tr:last-child td{
+    border: none;
+    border-top: 1px solid #ddd;
+    text-align: center;
+}
+#right_column{
+    margin-top: -40px;
+}
+#right_column tr th{
+    border-top: none;
+}
+/* === modal === */
+.jsn-modal.ui-dialog-content{
+    overflow: hidden;
+}
+.ig_action_btn .dropdown-menu{
+    left: -45px !important;
+    right: 100px;
+}
+.select2-drop{
+    z-index: 100000 !important;
+}
+.select2-drop-mask{
+    max-width: 80%;
+}
+/* === refine === */
+#ig_page_builder{
+    width: 100%;
+}
+#ig_page_builder .inside{
+    margin: 0;
+    padding: 0;
+}
+.item_title i{
+    margin-right: 6px;
+}
+.jsn-master .jsn-item{
+    min-height: 16px;
+}
+.append-field{
+    margin-left: -5px;
+    margin-right: 10px !important;
+}
+/* === pagebuilder container === */
+#ig_page_builder{
+    display: none;
+}
+.jsn-column-container:first-child{
+    margin-left: 0 !important;
+}
+.jsn-column-container:last-child{
+    margin-right: 0 !important;
+}
+.jsn-column-container{
+    margin-left: 0 !important;
+    position: relative;
+}
+.jsn-column-container:last-child .ui-resizable-handle{
+    display: none !important;
+}
+/* === this css is in sample.css of Com_sample, it should be in jsn-general.css === */
+.add-field-dialog .btn {
+    display: block;
+    text-align: left !important;
+    width: 100%;
+}
+.add-field-dialog {
+    min-height: 300px;
+    position: absolute;
+    width: 600px;
+    z-index: 100000;
+}
+.add-field-dialog .popover {
+    width: 99%;
+    position: absolute;
+}
+.jsn-master .jsn-bootstrap .jsn-add-more i {
+    margin: 0px 5px;
+}
+.jsn-master .jsn-items-list .ui-state-edit{
+    border-color: #FBEED5;
+    background-color: #FCF8E3;
+    transition: background 0.3s ease-out;
+    -moz-transition: background 0.3s ease-out;
+    -webkit-transition: background 0.3s ease-out;
+}
+/* === this overflow should be auto, not scroll === */
+.jsn-master .jsn-items-list{
+    overflow: auto;
+}
+/* === overwrite wp css === */
+#wpbody-content{
+    overflow: visible !important;
+}
+.jsn-master .jsn-bootstrap .popover-title{
+    font-weight: bold !important;
+    font-family: inherit!important;
+}
+.stop-scrolling {
+    height: 100%;
+    overflow: hidden;
+}
+/* === style for popover modal settings === */
+.control-list-action .popover{
+    width: 600px;
+}
+.ig-editor-tab-content{
+    overflow: visible !important;
+}
+.ig-pb-element{
+    font-weight: bold;
+}
+.ig-pb-element span{
+    font-weight: normal;
+}
+.ui-sortable .jsn-item:hover{
+    cursor: move;
+}
+.settings_popover .jsn-items-list{
+    max-height: 200px;
+}
+.margin0{
+    margin: 0!important;
+}
+.padTB0{
+    padding-bottom: 0;
+    padding-top: 0;
+}
+/* === for sorting Element in Popover === */
+#ig-add-element .jsn-items-list li{
+    width: 32.5% !important;
+}
+/* === to prevent scrollbar when have some elements, but the scrollbar still shows === */
+#ig-add-element .jsn-items-list{
+    max-height: 260px !important;
+    overflow-y: auto !important;
+    min-height: 260px;
+}
+.isotope-hidden{
+    display: none;
+}
+.posi_relative{
+    position: relative !important;
+}
+
+/* === WIDGET === */
+#ig-widget-form label{
+    display: inline !important;
+}
+#ig-widget-form input[type="text"], #ig-widget-form textarea, #ig-widget-form select{
+    border-spacing: 0;
+    width: 98%;
+    clear: both;
+    margin: 0;
+    padding: 6px 6px;
+}
+#ig-widget-form select {
+    height: 36px;
+}
+#ig-widget-form input[type="radio"], #ig-widget-form input[type="checkbox"]{
+    margin: 0;
+}
+#ig-pbd-loading{
+    display: none;
+    margin-top: 60px;
+}
+/* === radio image === */
+.radio_image{
+    border: 2px solid #c3c3c3;
+    background: #fff;
+    float: left;
+    margin-left: -20px;
+    background-repeat: no-repeat;
+}
+input:checked + .radio_image{
+    border: 2px solid red;
+    background: #08e;
+}
+/** Mode Switcher **/
+#form-design-content .jsn-item .shortcode-preview-container {
+    position: relative;
+}
+#form-design-content .jsn-item .shortcode-preview-container .shortcode-preview-fog{
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: #cccccc;
+    opacity: 0;
+    filter: alpha(opacity=0);
+}
+#form-design-content .jsn-item .ig-pb-fullmode-shortcode-title{
+    display:none;
+    z-index: 999999;
+}
+#form-design-content .jsn-item:hover .ig-pb-fullmode-shortcode-title{
+    display:block;
+}
+/* === gradient picker === */
+.classy-gradient-demo{
+    line-height: 26px;
+    font-size: 12px;
+    text-align: center;
+    padding: 20px 20px;
+    width: 262px;
+    margin: 10px 0;
+}
+/* === fix Filter By select2 css error === */
+#param-item_filter{
+    display: none;
+}
+.ig-widget-box .ig_widget_select_elm{
+    max-width: 174px;
+}
+/* === Message when deactivate Pagebuilder === */
+#off-message{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+#parent-param-prtbl_item_table_atts .jsn-items-list{
+    height: auto;
+    border: none;
+    padding: 0px;
+}
+#table_content .jsn-item-content
+{
+    text-align: center;
+}
+#parent-param-prtbl_item_table_atts .jsn-items-list{
+    height: auto;
+    border: none;
+    padding: 0px;
+}
+#table_content .jsn-item-content
+{
+    text-align: center;
+}
+/* === Button bar === */
+#ig_page_builder .jsn-form-bar{
+    margin-top: 0;
+}
+/* === Popup in Classic Editor, show Inno Shortcodes === */
+#ig-shortcodes{
+    margin-top: 10px;
+    margin-left: 20px;
+}
+#ig-shortcodes .jsn-items-list{
+    height: auto;
+    border: none;
+    overflow: auto;
+}
+.jsn-modal-indicator{
+    z-index: 200;
+}
+/* === REFINE === */
+.color_select2_item{
+    padding-right: 6px;
+    vertical-align: text-bottom;
+}
+#table_content td{
+    vertical-align: middle;
+    width: 50%;
+}
+#ig-element-promobox #parent-param-elements .jsn-items-list{
+    height: 150px;
+}
+#icon_selector .jsn-quick-search{
+    float: left;
+    width: 95%;
+}
+#icon_selector #jsn-quicksearch-icons{
+    width: 99%!important;
+    margin-left: 0px;
+}
+.jsn-master .jsn-row-container > .jsn-iconbar.left{
+    left: -44px;
+    border-left: 1px solid #ddd;
+    border-right: none;
+    border-radius: 4px 0 0 4px;
+    -webkit-border-radius: 4px 0 0 4px;
+    width: 26px;
+}
+#form-container .jsn-column{
+    background: #fff;
+}
+/* === Toggle Preview === */
+#previewToggle *{
+    cursor: pointer;
+}
+#hide_preview {
+    position: absolute;
+    font-size: 10px;
+    opacity: 0.3;
+    right: -5px;
+    bottom: -20px;
+}
+#hide_preview:hover {
+    opacity: 1;
+}
+#show_preview{
+    margin-bottom: 0;
+}
+/* === branding === */
+#branding{
+    padding: 15px 0 0;
+}
+/* === fix css error of gradient === */
+.classy-gradient-box .arrow{
+    display: none !important;
+}
+/* === Custom WYSIWYG editor === */
+.wysiwyg {
+    width: 100% !important;
+}
+/* === Premade layout === */
+.premade-layout-item {
+    line-height: 24px;
+}
+#ig-add-layout {
+    position: relative;
+    padding-bottom: 10px;
+    width: 300px;
+}
+#ig-add-layout .popover-content {
+    max-height: 160px;
+    overflow: auto;
+}
+#ig-add-layout div {
+    clear: both;
+    line-height: 30px;
+}
+#ig-add-layout a{
+    color: #333;
+}
+#ig-add-layout a:hover, #ig-add-layout #save-layout-messsage{
+    color: #0099FF;
+    text-decoration: none;
+}
+#ig-add-layout #save-layout-form .btn {
+    width: 30px;
+    padding: 4px 2px;
+}
+#ig-layout-lib {
+    width: 100%;
+}
+#ig-layout-lib .jsn-items-list {
+    border: none;
+}
+#ig-layout-lib .jsn-items-list li {
+    padding: 10px 2%;
+}
+#ig-layout-lib .jsn-fieldset-filter {
+    padding: 2px 16px;
+}
+#ig-layout-lib .jsn-items-list .premade-layout-item {
+    width: 96%;
+    color: #000;
+    padding: 5px;
+    font-size: 14px;
+    text-align: center;
+    display: inline-block;
+    text-decoration: none;
+    border: 1px solid #CCC;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    transition: color 0.3s linear, background 0.3s ease-out;
+    -moz-transition: color 0.3s linear, background 0.3s ease-out;
+    -webkit-transition: color 0.3s linear, background 0.3s ease-out;
+}
+#ig-layout-lib .jsn-items-list .premade-layout-item:hover {
+    background-color: #EFEFEF;
+    box-shadow: 0 0 5px #999;
+    -moz-box-shadow: 0 0 5px #999;
+    -webkit-box-shadow: 0 0 5px #999;
+}
+#ig-layout-lib .jsn-items-list .premade-layout-item.selected-layout {
+    padding-left: 6px;
+    padding-right: 6px;
+    font-weight: bold;
+    background-color: #FFCC33;
+    box-shadow: 0 0 5px #999;
+    -moz-box-shadow: 0 0 5px #999;
+    -webkit-box-shadow: 0 0 5px #999;
+}
+#ig-layout-lib .jsn-items-list button.premade-layout-item:hover,
+#ig-layout-lib .jsn-items-list button.premade-layout-item.selected-layout {
+    background-color: #e6e6e6 !important;
+}
+#ig-layout-lib .jsn-items-list span.thumbnail {
+    height: 150px;
+    padding-top: 0;
+    overflow: hidden;
+}
+#ig-layout-lib .jsn-items-list span.thumbnail img {
+    width: 100%;
+}
+.ui-dialog-buttonset .btn-disabled {
+    cursor: default !important;
+    background: #e6e6e6 !important;
+    color: #333 !important;
+}
+
+/* === Disable element === */
+.jsn-element.disabled {
+    opacity: 0.8;
+    background: #CECECE !important;
+}

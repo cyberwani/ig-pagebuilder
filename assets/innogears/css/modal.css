@@ -1,0 +1,43 @@
+/*------------------------------------------------------
+    For MODAL only
+------------------------------------------------------*/
+
+/* Remove Margin CSS */
+#wpcontent{
+    margin-left: 0 !important;
+}
+#wpbody-content{
+    padding-bottom: 0 !important;
+}
+.wp-toolbar{
+    padding-top: 0 !important;
+}
+/* Hide Admin bar & menu in Modal */
+#wpadminbar,
+#adminmenuwrap,
+#adminmenuback,
+#wpfooter,
+#setting-error-tgmpa,
+.update-nag,
+.screen-reader-shortcut
+{
+    display: none !important;
+}
+.select2-choice{
+	min-width: 140px;
+}
+#shortcode_inner_wrapper {
+	height: 200px;
+	overflow-y: scroll;
+    overflow-x: hidden;
+
+}
+
+.jsn-master.contentpane {
+	padding: 0px 10px;
+}
+
+* {
+	outline: none;
+
+}

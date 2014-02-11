@@ -1,0 +1,47 @@
+/*------------------------------------------------------
+    Common css for front end
+------------------------------------------------------*/
+.jsn-bootstrap .carousel h4{
+    color: #fff;
+    font-weight: bold;
+}
+.jsn-bootstrap img[class*="img-"] { margin: 10px 0; }
+div.ig_text p.dropcap:first-letter { margin: 0.1em 0.2em 0.1em -0.05em; }
+.jsn-master .jsn-bootstrap .mejs-container,
+.jsn-master .jsn-bootstrap .local_file,
+iframe, object, video {
+	max-width: 100%;
+}
+.modal-backdrop.in {
+	opacity: 0;
+	z-index: -1;
+}
+.ig_loading {
+    display: none;
+}
+.ig_loading.active {
+    display: block !important;
+}
+[class*="col-"] {
+	-moz-box-sizing: border-box !important;
+	-webkit-box-sizing: border-box !important;
+	-o-box-sizing: border-box !important;
+	-ms-box-sizing: border-box !important;
+	box-sizing: border-box !important;
+}
+/* === Prevent image shows beyond the container === */
+.ig-element-container img {
+    max-width: 100%;
+    float: inherit!important;
+}
+/* Add margin for WP audio */
+.wp-audio-shortcode {
+    margin: 10px 0;
+}
+/* === icons === */
+[class^="icon-"], [class*=" icon-"] {
+    margin-right: 8px;
+}
+.ig-element-list [class^="icon-"], [class*=" icon-"] {
+    margin-right: 0;
+}
