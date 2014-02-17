@@ -592,6 +592,11 @@
             $.HandleSetting.selector(curr_iframe, '#modalOptions #ig_overlay_loading').fadeOut('fast');
             $('#ig_previewing').val('0');
         });
+        // in case above 'load' action is not triggered
+        setTimeout( function(){
+            if($.HandleSetting.selector(curr_iframe, '#modalOptions #ig_overlay_loading').is(":visible"))
+                $.HandleSetting.selector(curr_iframe, '#modalOptions #ig_overlay_loading').fadeOut('fast');
+        }, 2000 );
         tmp_form.remove();
     }
 

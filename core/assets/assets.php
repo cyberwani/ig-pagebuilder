@@ -202,7 +202,7 @@ class IG_Pb_Assets {
 	 * @return  void
 	 */
 	protected static function enqueue_asset( $handle ) {
-        global $ig_handle_assets;
+		global $ig_handle_assets;
 		if ( isset( self::$assets[ $handle ] ) && isset( self::$assets[ $handle ]['site'] ) ) {
 			if ( 'admin' == self::$assets[ $handle ]['site'] && ! defined( 'WP_ADMIN' ) ) {
 				return;
@@ -222,7 +222,7 @@ class IG_Pb_Assets {
 		$type = ( substr( $handle, -4 ) == '-css' ) ? 'style' : 'script';
 
 		// Enqueue asset
-        $ig_handle_assets[] = $handle;
+		$ig_handle_assets[] = $handle;
 		if ( 'script' == $type && isset( self::$assets[ $handle ] ) && in_array( $handle, self::$registered ) ) {
 			// Build arguments to load script in footer so it can be localized at any time
 			$args[] = preg_replace( '/-( css|js )$/', '', $handle );

@@ -1037,7 +1037,8 @@
     $.HandleElement.initModeSwitcher	= function (){
         var switcher_group	= $('#mode-switcher');
         var container		= $('#form-container');
-
+        var cur_url			= window.location.search.substring(1);
+        
         $('.switchmode-button', switcher_group).on('click', function (){
             if($(this).hasClass('disabled')) return false;
             if($(this).attr('id')	== 'switchmode-full'){
@@ -1059,13 +1060,20 @@
 
                     });
                 });
+                $.HandleElement.setCookie('ig-pb-mode-' + cur_url, 2);
 
             }else if ($(this).attr('id') == 'switchmode-compact'){
                 container.removeClass('fullmode');
                 $.HandleElement.switchToCompact(container);
                 container.unbind('ig-pagebuilder-layout-changed');
+                $.HandleElement.setCookie('ig-pb-mode-' + cur_url, 1)
             }
         });
+        // Auto switch to full mode if it was
+        if ($.HandleElement.getCookie('ig-pb-mode-' + cur_url) == 2) {
+        	$('#switchmode-full', switcher_group).click();
+        }
+        
     }
 
     /**
@@ -1113,6 +1121,9 @@
         _shortcode_params.attr('name', 'params').removeAttr('data-sc-info').removeClass('shortcode-content');
 
         var _shorcode_name		= $(shortcode_wrapper).find('textarea.shortcode-content').attr('shortcode-name');
+        if ( typeof(_shorcode_name) == 'undefined' || _shorcode_name == null ) {
+            return;
+        }
         $(shortcode_wrapper).find('.jsn-overlay').show();
 
         if ($(shortcode_wrapper).find('form.shortcode-preview-form').length == 0){

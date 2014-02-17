@@ -44,11 +44,10 @@ class IG_Pb_Helper_Html_Group extends IG_Pb_Helper_Html {
 					$extract_params = IG_Pb_Helper_Shortcode::extract_params( ( $item['std'] ) );
 					$params = IG_Pb_Helper_Shortcode::generate_shortcode_params( $element->items, NULL, $extract_params, TRUE, FALSE, $content );
 					$element->shortcode_data();
-					if ( ! empty( $params['assign_title'] ) ) {
-						$content = $params['assign_title'];
-						if ( $overwrite_shortcode_data ) {
-							$shortcode_data = $element->config['shortcode_structure'];
-						}
+					$params['assign_title'] = empty ( $params['assign_title'] ) ? __( '(Untitled)', IGPBL ) : $params['assign_title'];
+					$content = $params['assign_title'];
+					if ( $overwrite_shortcode_data ) {
+						$shortcode_data = $element->config['shortcode_structure'];
 					}
 				}
 

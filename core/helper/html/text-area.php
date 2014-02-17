@@ -24,7 +24,7 @@ class IG_Pb_Helper_Html_Text_Area extends IG_Pb_Helper_Html {
 			$element['std'] = str_replace( '<ig_quote>', '"', $element['std'] );
 		}
 		$output = "<textarea class='{$element['class']}' id='{$element['id']}' rows='{$element['row']}' cols='{$element['col']}' name='{$element['id']}' DATA_INFO>{$element['std']}</textarea>";
-		
+
 		return parent::final_element( $element, $output, $label );
 	}
 }

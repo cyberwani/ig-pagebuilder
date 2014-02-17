@@ -43,6 +43,31 @@ function ig_pb_delete_meta_key( $keys, $post_id = null ) {
 	$wpdb->query( $wpdb->prepare( "DELETE FROM $wpdb->postmeta WHERE $extra meta_key IN (%s)", $keys ) );
 }
 
+// Remove cache folder
+function ig_pb_remove_cache_folder() {
+	$cache_dir = WP_CONTENT_DIR . '/uploads' . '/igcache/pagebuilder';
+	ig_pb_rrmdir( $cache_dir );
+}
+
+/**
+ * Remove directory
+ * @param type $dir
+ */
+function ig_pb_rrmdir( $dir ) {
+	if ( is_dir( $dir ) ) {
+		$objects = scandir( $dir );
+		foreach ( $objects as $object ) {
+			if ( $object != '.' && $object != '..' ) {
+				if ( filetype( $dir.'/'.$object ) == 'dir' )
+					ig_pb_rrmdir( $dir.'/'.$object );
+				else unlink( $dir.'/'.$object );
+			}
+		}
+		reset( $objects );
+		rmdir( $dir );
+	}
+}
+
 /**
  * Generate random string
  * @param type $length

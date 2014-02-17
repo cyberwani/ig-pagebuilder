@@ -492,6 +492,7 @@
             this.wrapper.delegate(this.deletebtn,"click",function(){
                 if($(this).hasClass('row')){
                     self.removeConfirmMsg($(this).parents(".jsn-row-container"), 'row');
+                    self.wrapper.trigger('ig-pagebuilder-layout-changed', [parentForm]);
                 }
                 else if($(this).hasClass('column')){
                     var totalWidth = this_wrapper.width();
@@ -501,6 +502,7 @@
                     if(countColumn == 0){
                         // remove this row
                         self.removeConfirmMsg(parentForm, 'column', $(this).parents(".jsn-column-container"));
+                        self.wrapper.trigger('ig-pagebuilder-layout-changed', [parentForm]);
                         return true;
                     }
                     var span = parseInt(12 / countColumn);

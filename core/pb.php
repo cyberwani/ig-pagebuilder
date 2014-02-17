@@ -73,7 +73,7 @@ class IG_Pb {
 		// enable shortcode in content & filter content with IGPB shortcodes
 		add_filter( 'the_content', 'do_shortcode' );
 		add_filter( 'the_content', array( &$this, 'pagebuilder_to_frontend' ) );
-		remove_filter( 'the_content', 'wpautop' );
+		//		remove_filter( 'the_content', 'wpautop' );
 		remove_filter( 'the_excerpt', 'wpautop' );
 		// enqueue js for front-end
 		add_action( 'wp_enqueue_scripts', array( &$this, 'frontend_scripts' ) );
@@ -118,6 +118,7 @@ class IG_Pb {
 		// Frontend hook
 		add_filter( 'body_class', array( &$this, 'wp_bodyclass' ) );
 		add_action( 'wp_head', array( &$this, 'post_view' ) );
+		add_action( 'wp_footer', array( &$this, 'enqueue_compressed_assets' ) );
 
 
 		do_action( 'ig_pb_custom_hook' );
@@ -368,15 +369,16 @@ JS;
 
 				$post_content = ( implode( '', $data ) );
 				$post_content = ig_pb_remove_placeholder( $post_content, 'wrapper_append', '' );
+
+				update_post_meta( $post_id, '_ig_page_builder_content', $post_content );
+				update_post_meta( $post_id, '_ig_html_content', IG_Pb_Helper_Shortcode::doshortcode_content( $post_content ) );
+				update_post_meta( $post_id, '_ig_page_active_tab', $ig_active_tab );
 			}
 			else {
 				$content = stripslashes( $_POST['content'] );
 				/// remove this line? $content = apply_filters( 'the_content', $content );
 				$post_content = $content;
 			}
-			update_post_meta( $post_id, '_ig_page_builder_content', $post_content );
-			update_post_meta( $post_id, '_ig_html_content', IG_Pb_Helper_Shortcode::doshortcode_content( $post_content ) );
-			update_post_meta( $post_id, '_ig_page_active_tab', $ig_active_tab );
 		}
 		update_post_meta( $post_id, '_ig_deactivate_pb', $ig_deactivate_pb );
 	}
@@ -853,5 +855,56 @@ JS;
 	// after editor hook
 	function hook_after_editor() {
 		echo '</div><div class="tab-pane" id="ig_editor_tab2"><div id="ig_before_pagebuilder"></div></div></div></div>';
+	}
+
+	/**
+     * Compress asset files
+     */
+	function enqueue_compressed_assets() {
+		if ( ! empty ( $_SESSION['ig-pb-assets-frontend'] ) ) {
+			global $post;
+			if ( empty ( $post ) )
+				exit;
+			$contents_of_type = array();
+			$this_session     = $_SESSION['ig-pb-assets-frontend'][$post->ID];
+			// Get content of assets file from shortcode directories
+			foreach ( $this_session as $type => $list ) {
+				$contents_of_type[$type] = array();
+				foreach ( $list as $path => $modified_time ) {
+					$fp = @fopen( $path, 'r' );
+					if ( $fp ) {
+						$contents_of_type[$type][$path] = fread( $fp, filesize( $path ) );
+						fclose( $fp );
+					}
+				}
+			}
+			// Write content of css, js to 2 seperate files
+			$cache_dir = IG_Pb_Helper_Functions::get_wp_upload_folder( '/igcache/pagebuilder' );
+			foreach ( $contents_of_type as $type => $list ) {
+				$handle_info   = $this_session[$type];
+				$hash_name     = md5( implode( ',', array_keys( $list ) ) );
+				$file_name     = "$hash_name.$type";
+				$file_to_write = "$cache_dir/$file_name";
+
+				// check stored data
+				$store = IG_Pb_Helper_Functions::compression_data_store( $handle_info, $file_name );
+
+				if ( $store[0] == 'exist' ) {
+					$file_name     = $store[1];
+					$file_to_write = "$cache_dir/$file_name";
+				} else {
+					$fp = fopen( $file_to_write, 'w' );
+					$handle_contents = implode( "\n------------------------------------------------------------\n", $list );
+					fwrite( $fp, $handle_contents );
+					fclose( $fp );
+				}
+
+				// Enqueue script/style to footer of page
+				if ( file_exists( $file_to_write ) ) {
+					$function = ( $type == 'css' ) ? 'wp_enqueue_style' : 'wp_enqueue_script';
+					$function( $file_name, IG_Pb_Helper_Functions::get_wp_upload_url( '/igcache/pagebuilder' ) . "/$file_name" );
+				}
+			}
+		}
 	}
 }

@@ -9,27 +9,58 @@
  * @version		$Id$
  */
 
-add_action( 'admin_init', 'ig_pb_activate_plugin' );
+add_action( 'admin_init', 'ig_pb_activate_plugin', 100 );
 // active extracted plugin
 function ig_pb_activate_plugin() {
-	global $pagenow;
-	$providers = ig_default_providers();
+	if ( get_transient( 'ig_pb_check_activate' ) ) {
+		ob_start();
+		global $pagenow;
+		$providers = ig_default_providers();
 
-	if ( is_plugin_active( 'ig-pagebuilder/ig-pagebuilder.php' ) ) {
-		ig_pb_extract_plugins();
+		if ( is_plugin_active( 'ig-pagebuilder/ig-pagebuilder.php' ) ) {
+			ig_pb_extract_plugins();
 
-		// activate dependency plugins
-		foreach ( $providers as $provider ) {
-			if ( isset ( $provider['folder'] ) ) {
-				$folder = $provider['folder'];
-				if ( ! is_plugin_active( $folder . '/main.php' ) ) {
-					activate_plugin( $folder . '/main.php' );
-					// remove action
-					remove_action( 'admin_init', __FUNCTION__ );
+			// activate dependency plugins
+			foreach ( $providers as $provider ) {
+				if ( isset ( $provider['folder'] ) ) {
+					$folder = $provider['folder'];
+					if ( ! is_plugin_active( $folder . '/main.php' ) ) {
+						activate_plugin( $folder . '/main.php' );
+					}
 				}
 			}
 		}
+		ob_clean();
+
+		setcookie( 'ig_pb_check_activate', '', time() - 1000 );
 	}
+}
+
+/**
+ * Activate hook
+ */
+register_activation_hook( IG_PB_FILE, 'ig_pb_activate' );
+function ig_pb_activate() {
+    $plugin_data = get_plugin_data( IG_PB_FILE );
+    set_transient( 'ig_pb_check_activate', $plugin_data['Version'] );
+	ig_pb_remove_cache_folder();
+}
+
+/**
+ * Manual do activation_hook for Update action (when register_activation_hook is not fired)
+ */
+add_action( 'admin_init', 'ig_pb_check_activate_plugin' );
+function ig_pb_check_activate_plugin() {
+    global $pagenow;
+    if ( in_array( $pagenow, array( 'plugins.php', 'update.php' ) ) ) {
+        $plugin_data = get_plugin_data( IG_PB_FILE );
+        $version = get_transient( 'ig_pb_check_activate' );
+
+        if ( $plugin_data['Version'] != $version ) {
+            ob_start();
+            ig_pb_activate();
+        }
+    }
 }
 
 /**
@@ -45,25 +76,24 @@ function ig_pb_extract_plugins() {
 			$source_zip = plugin_dir_path( IG_PB_FILE ) . $folder . '.zip';
 			if ( ! ( file_exists( $source_zip ) ) ){
 				$error = 404;
-				return;
-			}
-
-			$source_folder = WP_PLUGIN_DIR . "/$folder";
-			if ( file_exists( $source_folder ) ) {
-				// delete folder
-				rrmdir( $source_folder );
-				// rename older folder
-				//rename( $source_folder, $source_folder . '-old' );
-			}
-			// extract to plugin folder
-			$unzipfile = unzip_file( $source_zip, $source_folder );
-			if ( $unzipfile ) {
-				$error = 0;
 			} else {
-				$error = 1;
+				$source_folder = WP_PLUGIN_DIR . "/$folder";
+				if ( file_exists( $source_folder ) ) {
+					// delete folder
+					ig_pb_rrmdir( $source_folder );
+					// rename older folder
+					//rename( $source_folder, $source_folder . '-old' );
+				}
+				// extract to plugin folder
+				$unzipfile = unzip_file( $source_zip, $source_folder );
+				if ( $unzipfile ) {
+					$error = 0;
+				} else {
+					$error = 1;
+				}
+				// remove zip file
+				unlink( $source_zip );
 			}
-			// remove zip file
-			unlink( $source_zip );
 		}
 	}
 }
@@ -86,27 +116,10 @@ function ig_default_providers() {
 	return $Ig_Sc_Providers;
 }
 
-/**
- * Remove directory
- * @param type $dir
- */
-function rrmdir( $dir ) {
-	if ( is_dir( $dir ) ) {
-		$objects = scandir( $dir );
-		foreach ( $objects as $object ) {
-			if ( $object != '.' && $object != '..' ) {
-				if ( filetype( $dir.'/'.$object ) == 'dir' )
-					rrmdir( $dir.'/'.$object );
-				else unlink( $dir.'/'.$object );
-			}
-		}
-		reset( $objects );
-		rmdir( $dir );
-	}
-}
 /*------------------------------------------------------
 	Deactivate
 ------------------------------------------------------*/
+
 register_deactivation_hook( IG_PB_FILE, 'ig_pb_deactivate' );
 // in case: select some/all plugins then Deactivate
 add_action( 'admin_init', 'ig_pb_deactivate' );

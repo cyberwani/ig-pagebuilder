@@ -260,7 +260,8 @@ if ( ! class_exists( 'IG_Pb_Helper_Shortcode' ) ) {
 									if ( ! empty( $assign_title ) ) {
 										// default std
 										if ( strpos( $option['std'], ig_pb_get_placeholder( 'index' ) ) !== false ) {
-											$option['std'] = $params['assign_title'] = $assign_title;
+											$option['std'] = '';
+											$params['assign_title'] = __( '(Untitled)', IGPBL );
 										} else if ( (isset($option['role'] ) && $option['role'] == 'title') || ( isset($option['role_2'] ) && $option['role_2'] == 'title' ) ) {
 											if ( $option['role'] == 'title' )
 												$params['assign_title'] = $option['std'];

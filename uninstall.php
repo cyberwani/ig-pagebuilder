@@ -27,6 +27,8 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) )
 
 include_once 'core/utils/common.php';
 
-ig_pb_delete_meta_key( array( '_ig_page_builder_content', '_ig_html_content', '_ig_page_active_tab', '_ig_post_view_count', '_ig_deactivate_pb' ) );
+// remove cache folder
+ig_pb_remove_cache_folder();
 
-do_action( 'ig_pb_uninstall' );
+// delele meta key
+ig_pb_delete_meta_key( array( '_ig_page_builder_content', '_ig_html_content', '_ig_page_active_tab', '_ig_post_view_count', '_ig_deactivate_pb' ) );

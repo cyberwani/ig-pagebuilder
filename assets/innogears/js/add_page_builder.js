@@ -43,15 +43,33 @@ jQuery( function ( $ ) {
         }
 
         // Preview Changes fix
+        $('#preview-action').css('position', 'relative');
+        // Add a overlay div of "Preview Changes" button
+        $('<div />', {'id' : 'ig-preview-overlay'}).css({'position':'absolute', 'width' : '100%', 'height' : '24px'}).hide().appendTo($('#preview-action'));
         $('#form-container').bind('ig-pagebuilder-layout-changed', function() {
-            var tab_content = '';
-            $("#form-container textarea[name^='shortcode_content']").each(function(){
-                tab_content += $(this).val();
+            // Prevent click "Preview Changes" button
+            $('#ig-preview-overlay').show();
+            $('#post-preview').attr('disabled', true);
+
+            _update_content(function(){
+                // Active "Preview Changes" button
+                $('#ig-preview-overlay').hide();
+                $('#post-preview').removeAttr('disabled');
             });
 
-            if(tinymce.activeEditor)
-                tinymce.activeEditor.setContent(tab_content);
-            $("#ig_editor_tab1 #content").val(tab_content);
+            function _update_content(callback) {
+                var tab_content = '';
+                $("#form-container textarea[name^='shortcode_content']").each(function(){
+                    tab_content += $(this).val();
+                });
+
+                if(tinymce.activeEditor)
+                    tinymce.activeEditor.setContent(tab_content);
+                $("#ig_editor_tab1 #content").val(tab_content);
+
+                if(callback)
+                    callback();
+            }
         });
 
 

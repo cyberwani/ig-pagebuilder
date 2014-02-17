@@ -48,7 +48,7 @@ if ( ! class_exists( 'IG_Pb_Helper_Functions' ) ) {
 				'attribute'		=> __( 'Attribute', IGPBL ),
 				'option_attribute' => __( 'Option Attribute', IGPBL ),
 				'deactivatePb'     => __( 'After turning off, the content built with PageBuilder will be parsed to plain HTML code and inserted to default editor. Are you sure you want to turn PageBuilder off?', IGPBL ),
-				'no_title'		 => __( '(Untitled )', IGPBL ),
+				'no_title'		 => __( '(Untitled)', IGPBL ),
 				'inno_shortcode'   => __( 'Inno Shortcodes', IGPBL ),
 				'inno_icon'		=> IG_Pb_Helper_Functions::path( 'assets/innogears' ) . '/images/inno.png',
 				'asset_url'		=> IG_PB_URI . 'assets/innogears/',
@@ -175,7 +175,7 @@ if ( ! class_exists( 'IG_Pb_Helper_Functions' ) ) {
 				$file_uri  = $inno_gears_js['uri'] . '/' . $js_file;
 			}
 			if ( file_exists( $file_path ) ) {
-				self::asset_enqueue_( $file_uri, $js_file );
+				self::asset_enqueue_( $file_uri, $js_file, $file_path );
 				return true;
 			}
 			return false;
@@ -194,7 +194,7 @@ if ( ! class_exists( 'IG_Pb_Helper_Functions' ) ) {
 			$file_path  = $sc_path. "/$require_sc/assets/" . $js_file;
 			$file_uri   = $sc_uri . "/$require_sc/assets/" . $js_file;
 			if ( file_exists( $file_path ) ) {
-				self::asset_enqueue_( $file_uri, $js_file );
+				self::asset_enqueue_( $file_uri, $js_file, $file_path );
 			}
 		}
 
@@ -204,11 +204,55 @@ if ( ! class_exists( 'IG_Pb_Helper_Functions' ) ) {
 		 * @param unknown $file_uri
 		 * @param unknown $js_file
 		 */
-		static private function asset_enqueue_( $file_uri, $js_file ) {
-			if ( strpos( $file_uri, '.js' ) !== false )
-				wp_enqueue_script( preg_replace( '/[_.]/', '-', $js_file ), $file_uri );
-			else
-				wp_enqueue_style( preg_replace( '/[_.]/', '-', $js_file ), $file_uri );
+		static private function asset_enqueue_( $file_uri, $js_file, $file_path ) {
+			if ( is_admin() ) {
+				if ( strpos( $file_uri, '.js' ) !== false )
+					wp_enqueue_script( preg_replace( '/[_.]/', '-', $js_file ), $file_uri );
+				else
+					wp_enqueue_style( preg_replace( '/[_.]/', '-', $js_file ), $file_uri );
+			} else {
+				self::store_assets_info( preg_replace( '/[_.]/', '-', $js_file ), $file_uri, $file_path );
+			}
+		}
+
+		/**
+		 * Store handle to Session
+		 *
+		 * @global type $wp_scripts
+		 * @param type $handle
+		 */
+		static function store_assets_info( $handle, $src = '', $file_path = '' ) {
+			global $wp_scripts, $post;
+			$handle_object = array();
+
+			if ( empty ( $_SESSION['ig-pb-assets-frontend'] ) )
+				$_SESSION['ig-pb-assets-frontend'] = array();
+			if ( empty ( $_SESSION['ig-pb-assets-frontend'][$post->ID] ) )
+				$_SESSION['ig-pb-assets-frontend'][$post->ID] = array();
+
+			if ( ! ( empty ( $wp_scripts ) && empty ( $wp_scripts->registered ) ) ) {
+				if ( array_key_exists( $handle, $wp_scripts->registered ) ) {
+					$handle_object = $wp_scripts->registered[$handle];
+					$src = $handle_object['src'];
+				}
+			}
+
+			$type = ( substr( $src, -2 ) == 'js' ) ? 'js' : 'css';
+			if ( empty ( $_SESSION['ig-pb-assets-frontend'][$post->ID][$type] ) )
+				$_SESSION['ig-pb-assets-frontend'][$post->ID][$type] = array();
+
+			if ( ! array_key_exists( $handle, $_SESSION['ig-pb-assets-frontend'][$post->ID][$type] ) ) {
+				//				// Dependency
+				//				if( isset ( $handle_object['deps'] ) ) {
+				//					$deps = $handle_object['deps'];
+				//					foreach ($deps as $other_handle) {
+				//						self::store_assets_info( $other_handle );
+				//					}
+				//				}
+				$modified_time = filemtime( $file_path );
+				$_SESSION['ig-pb-assets-frontend'][$post->ID][$type][$file_path] = $modified_time;
+			}
+
 		}
 
 		/**
@@ -588,8 +632,13 @@ if ( ! class_exists( 'IG_Pb_Helper_Functions' ) ) {
 			</$element_wrapper>";
 		}
 
-		static function get_wp_upload_folder(){
-			$ig_pb_user_layout = '/ig-pb-user-layout';
+		/**
+		 * Get basedir of subfolder in UPLOAD folder
+		 *
+		 * @param type $sub_dir
+		 * @return type
+		 */
+		static function get_wp_upload_folder( $sub_dir = '' ) {
 			$upload_dir = wp_upload_dir();
 			if ( is_array( $upload_dir ) && isset ( $upload_dir['basedir'] ) ) {
 				$upload_dir = $upload_dir['basedir'];
@@ -599,10 +648,25 @@ if ( ! class_exists( 'IG_Pb_Helper_Functions' ) ) {
 					mkdir( $upload_dir );
 				}
 			}
-			if ( ! is_dir( $upload_dir . $ig_pb_user_layout ) ) {
-				mkdir( $upload_dir . $ig_pb_user_layout );
+			if ( ! is_dir( $upload_dir . $sub_dir ) ) {
+				mkdir( $upload_dir . $sub_dir, 0777, true );
 			}
-			return $upload_dir . $ig_pb_user_layout;
+			return $upload_dir . $sub_dir;
+		}
+
+		/**
+		 * Get baseurl of subfolder in UPLOAD folder
+		 *
+		 * @param type $sub_dir
+		 * @return type
+		 */
+		static function get_wp_upload_url( $sub_dir = '' ) {
+			$upload_dir = wp_upload_dir();
+			if ( is_array( $upload_dir ) && isset ( $upload_dir['basedir'] ) ) {
+				return $upload_dir['baseurl'] . $sub_dir;
+			} else {
+				return WP_CONTENT_URL . '/uploads' . $sub_dir;
+			}
 		}
 
 		/**
@@ -611,11 +675,11 @@ if ( ! class_exists( 'IG_Pb_Helper_Functions' ) ) {
 		 * @param type $layout_content
 		 */
 		static function save_premade_layouts( $layout_name, $layout_content ) {
-			$upload_dir = self::get_wp_upload_folder();
+			$upload_dir = self::get_wp_upload_folder( '/ig-pb-user-layout' );
 
 			$layout_name = preg_replace( '/([\[\]])*/', '',  $layout_name );
 			$file = $upload_dir . '/layout-' . time() . '.tpl';
-			$fp = fopen( $file, 'w+' );
+			$fp = fopen( $file, 'w' );
 			fwrite( $fp, "[ig_layout_tile $layout_name]" );
 			fwrite( $fp, $layout_content );
 			fclose( $fp );
@@ -625,7 +689,7 @@ if ( ! class_exists( 'IG_Pb_Helper_Functions' ) ) {
 		 * get name of premade layouts file
 		 */
 		static function get_premade_layouts() {
-			$upload_dir = self::get_wp_upload_folder();
+			$upload_dir = self::get_wp_upload_folder( '/ig-pb-user-layout' );
 			$files = array();
 			$dirs = array( $upload_dir, IG_PB_PREMADE_LAYOUT );
 			foreach ( $dirs as $dir ) {
@@ -664,22 +728,22 @@ if ( ! class_exists( 'IG_Pb_Helper_Functions' ) ) {
 						$layout_thumb = IG_PB_PREMADE_LAYOUT_URI . "/$thumbnail";
 						echo balanceTags(
 							"<li class='jsn-item $provider' data-type='$provider' >
-						        <a class='template-item-thumb premade-layout-item' data-id='$name' href='javascript:;'>
-						            <span class='thumbnail'>
+								<a class='template-item-thumb premade-layout-item' data-id='$name' href='javascript:;'>
+									<span class='thumbnail'>
 										<img src='$layout_thumb' alt='$layout_name' align='center'>
-						            </span>
-						            <span>$layout_name</span>
-						            $content
-						        </a>
-						    </li>"
+									</span>
+									<span>$layout_name</span>
+									$content
+								</a>
+							</li>"
 						);
 					} else {
 						$class = 'hidden';
 						echo balanceTags(
 							"<li class='jsn-item $provider $class' data-type='$provider' >
-						        <button data-id='$name' class='premade-layout-item btn'>$layout_name $content</button>
+								<button data-id='$name' class='premade-layout-item btn'>$layout_name $content</button>
 
-						    </li>"
+							</li>"
 						);
 					}
 				}
@@ -710,11 +774,11 @@ if ( ! class_exists( 'IG_Pb_Helper_Functions' ) ) {
 		 * @return type
 		 */
 		static function extract_layout_data( $path, $data ){
-			$handle = @fopen( $path, 'r' );
-			if ( $handle ) {
-				$contents = fread( $handle, filesize( $path ) );
+			$fp = @fopen( $path, 'r' );
+			if ( $fp ) {
+				$contents = fread( $fp, filesize( $path ) );
 				$pattern  = '/\[ig_layout_tile\s([^\]]+)\]/';
-
+				fclose( $fp );
 				if ( $data == 'name' ) {
 					preg_match( $pattern, $contents, $matches );
 					return $matches[1];
@@ -722,6 +786,67 @@ if ( ! class_exists( 'IG_Pb_Helper_Functions' ) ) {
 					return preg_replace( $pattern, '', $contents );
 				}
 			}
+		}
+
+		/**
+         * Store relation: array(file1, file2) => compressed file
+         *
+         * @param type $handle_info
+         * @param type $file_name
+         * @return type
+         */
+		static function compression_data_store( $handle_info, $file_name ) {
+			$cache_dir = IG_Pb_Helper_Functions::get_wp_upload_folder( '/igcache/pagebuilder' );
+			$file_to_write_ = "$cache_dir/ig-pb.cache";
+			$fp = fopen( $file_to_write_, 'a+' );
+			if ( $fp ) {
+				// get stored data
+				$str = '';
+				while ( ! feof( $fp ) ) {
+					$str .= fread( $fp, 1024 );
+				}
+				$stored_data = unserialize( $str );
+				$stored_data = $stored_data ? $stored_data : array();
+				// check if $handle_info is existed in stored data
+				$exist = '';
+				foreach ( $stored_data as $handle_info_serialized => $compressed_file ) {
+					$handle_info_old = unserialize( $handle_info_serialized );
+					// check if handle names are same
+					if ( ! count( array_diff( array_keys( $handle_info ), array_keys( $handle_info_old ) ) ) ) {
+						// check if date modified are same
+						if ( ! count( array_diff( $handle_info, $handle_info_old ) ) ) {
+							$exist = $compressed_file;
+							fclose( $fp );
+							return array( 'exist', $compressed_file );
+						}
+					}
+				}
+
+				// close current handle
+				fclose( $fp );
+
+				// open new handle to write from beginning of file
+				$fp = fopen( $file_to_write_, 'w' );
+				$string = serialize( $handle_info );
+				$stored_data[$string] = $file_name;
+				fwrite( $fp, serialize( $stored_data ) );
+
+				fclose( $fp );
+				return array( 'not exist', $file_name );
+			}
+		}
+
+		/**
+         * Handle empty icon & heading for Carousel, ,Tab, Accordion, List item
+         * @param type $heading
+         * @param type $icon
+         */
+		static function heading_icon( &$heading, &$icon, $heading_empty = false ) {
+			if ( strpos( $heading, ig_pb_get_placeholder( 'index' ) ) !== false ) {
+				$heading = '';
+			}
+			if ( empty ( $icon ) && empty ( $heading ) )
+				$heading = ! $heading_empty ? __( '(Untitled)', IGPBL ) : '';
 		}
 	}
 
