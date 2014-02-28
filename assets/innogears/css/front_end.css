@@ -45,3 +45,7 @@ iframe, object, video {
 .ig-element-list [class^="icon-"], [class*=" icon-"] {
     margin-right: 0;
 }
+/* === tooltip === */
+.tipsy img {
+    float: none !important;
+}

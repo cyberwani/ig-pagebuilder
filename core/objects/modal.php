@@ -10,9 +10,9 @@
  * Websites: http://www.www.innogears.com
  * Technical Support:  Feedback - http://www.www.innogears.com
  */
-if ( ! class_exists( 'IG_Pb_Modal' ) ) {
+if ( ! class_exists( 'IG_Pb_Objects_Modal' ) ) {
 
-	class IG_Pb_Modal {
+	class IG_Pb_Objects_Modal {
 
 		private static $instance;
 
@@ -32,6 +32,7 @@ if ( ! class_exists( 'IG_Pb_Modal' ) ) {
 		}
 
 		public function apply_assets( $assets ){
+			IG_Pb_Helper_Functions::load_bootstrap_3( $assets );
 			$assets['ig-pb-handlesetting-js'] = array(
 				'src' => IG_Pb_Helper_Functions::path( 'assets/innogears' ) . '/js/handle_setting.js',
 				'ver' => '1.0.0',
@@ -59,14 +60,14 @@ if ( ! class_exists( 'IG_Pb_Modal' ) ) {
 
 			IG_Pb_Helper_Functions::enqueue_scripts_end();
 
-			IG_Pb_Assets::load( array( 'ig-pb-jquery-fancybox-js', 'ig-pb-placeholder' ) );
+			IG_Pb_Assets_Load::load( array( 'ig-pb-jquery-fancybox-js', 'ig-pb-placeholder' ) );
 		}
 
 		public function enqueue_admin_style() {
 			IG_Pb_Helper_Functions::enqueue_styles();
-			IG_Pb_Assets::load( array( 'ig-pb-jquery-tipsy-css', 'ig-pb-modal-css', 'ig-pb-jquery-fancybox-css' ) );
+			IG_Pb_Assets_Load::load( array( 'ig-pb-jquery-tipsy-css', 'ig-pb-modal-css', 'ig-pb-jquery-fancybox-css' ) );
 			if ( IG_Pb_Helper_Functions::is_preview() ) {
-				IG_Pb_Assets::load( array( 'ig-pb-frontend-css' ) );
+				IG_Pb_Assets_Load::load( array( 'ig-pb-frontend-css' ) );
 			}
 		}
 
@@ -83,15 +84,15 @@ if ( ! class_exists( 'IG_Pb_Modal' ) ) {
 
 			// load last assets: HandleSettings & hooked assets
 			$assets = apply_filters( 'ig_pb_assets_enqueue_modal', array( 'ig-pb-handlesetting-js', ) );
-			IG_Pb_Assets::load( $assets );
+			IG_Pb_Assets_Load::load( $assets );
 		}
 
 		public function content_layout() {
-			include IG_PB_TPL_PATH . '/layout-list.php';
+			include IG_PB_TPL_PATH . '/layout/list.php';
 
 			// load last assets: HandleSettings & hooked assets
 			$assets = apply_filters( 'ig_pb_assets_enqueue_modal', array( 'ig-pb-handlesetting-js', ) );
-			IG_Pb_Assets::load( $assets );
+			IG_Pb_Assets_Load::load( $assets );
 		}
 
 		/**

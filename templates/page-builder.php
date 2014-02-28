@@ -21,6 +21,9 @@ wp_nonce_field( 'ig_builder', IGNONCE . '_builder' );
 		<button type="button" class="switchmode-button btn active" id="switchmode-compact"><?php _e( 'Compact', IGPBL ) ?></button>
 		<button type="button" class="switchmode-button btn" id="switchmode-full"><?php _e( 'Full', IGPBL ) ?></button>
 	</div>
+    <div class="pull-right">
+        <button type="button" class="switchmode-button btn" id="premade-layout"><i class="icon-list"></i><?php _e( 'Layout templates', IGPBL ) ?></button>
+    </div>
 </div>
 
 <!-- Pagebuilder elements -->
@@ -61,7 +64,7 @@ if ( ! empty( $pagebuilder_content ) ) {
 </div>
 <?php
 include 'select-elements.php';
-include 'layout-template.php';
+include 'layout/template.php';
 ?>
 <!--[if IE]>
 <style>

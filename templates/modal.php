@@ -55,7 +55,7 @@ if ( ! empty( $shortcode ) ) {
 
 			// get Modal setting box
 			$settings = $instance->items;
-			$data['content'] = IG_Pb_Modal::get_shortcode_modal_settings( $settings, $shortcode, $extract_params );
+			$data['content'] = IG_Pb_Objects_Modal::get_shortcode_modal_settings( $settings, $shortcode, $extract_params );
 			echo balanceTags( $data['content'] );
 		}
 	}
@@ -84,14 +84,14 @@ if ( ! empty( $shortcode ) ) {
 			$data_['href'] = "#$tab";
 			$data_['data-toggle'] = 'tab';
 			$content_ = ucfirst( $tab );
-			$tabs[] = "<li class='$active'>" . IG_Pb_Modal::tab_settings( 'a', $data_, $content_ ) . '</li>';
+			$tabs[] = "<li class='$active'>" . IG_Pb_Objects_Modal::tab_settings( 'a', $data_, $content_ ) . '</li>';
 		}
 		// content
 		$contents   = array();
 		$contents[] = "<div class='tab-pane active' id='content'><form id='ig-widget-form'>$form</form></div>";
 		$contents[] = "<div class='tab-pane' id='styling'>" . IG_Pb_Helper_Shortcode::render_parameter( 'preview' ) . '</div>';
 
-		$output = IG_Pb_Modal::setting_tab_html( $shortcode, $tabs, $contents, array(), '', array() );
+		$output = IG_Pb_Objects_Modal::setting_tab_html( $shortcode, $tabs, $contents, array(), '', array() );
 
 		echo balanceTags( $output );
 	}

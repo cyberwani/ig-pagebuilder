@@ -417,57 +417,107 @@
             $(this).toggleClass(selected_layout);
             window.parent.jQuery.noConflict()('.ui-dialog-buttonset .btn-disabled').removeClass('btn-disabled');
         });
-
-
-//        $("#ig-add-layout").delegate(".premade-layout-item","click",function(){
-//            var layout_id = $(this).attr('data-id');
-//            var layout_content = $('#tmpl-layout-' + layout_id).html();
-//            $.HandleElement.updatePageBuilder( layout_content);
-//        });
     },
 
     // Save Premade Layout
     $.HandleElement.saveLayout = function() {
-        $('#btn-layout-cancel').click(function(e){
-           $('#ig-add-layout #save-layout').toggleClass('hidden');
-           $('#ig-add-layout #save-layout-form').toggleClass('hidden');
+        $('.btn-layout-cancel').click(function(e){
+            var relate_el = $(this).attr('data-id');
+           $('#ig-add-layout #' + relate_el).toggleClass('hidden');
+           $('#ig-add-layout #' + relate_el + '-form').toggleClass('hidden');
         });
-        $('#btn-layout-add').click(function(e){
-            var this_   = $(this);
-            var loading = $('#ig-add-layout #save-layout-loading');
+
+        var layout_fn = function(e, this_, val, loading, callback){
             e.preventDefault();
-            var layout_name = $('#ig-add-layout #layout-name').val();
-            if (layout_name.trim() != '') {
+
+            if (val.trim() != '') {
                 loading.toggleClass('hidden');
-                $('#ig-add-layout #save-layout-form').toggleClass('hidden');
-                // ajax post to save
+                this_.parent().toggleClass('hidden');
+
+                callback();
+            }
+        }
+
+        // callback function when finish
+        var layout_callback_fn = function(loading, message, msg_callback , action_btn){
+            loading.toggleClass('hidden');
+            message.toggleClass('hidden');
+            if(msg_callback)
+                msg_callback();
+
+            // hide save layout box
+            setTimeout(function(){
+                message.toggleClass('hidden');
+                action_btn.toggleClass('hidden');
+            }, 3000 );
+        }
+
+        // Save premade layout
+        $('#save-layout-form button').click(function(e){
+            var val = $('#ig-add-layout #layout-name').val();
+            var parent = $(this).parents('.layout-box');
+            var loading = parent.find('.layout-loading');
+            layout_fn(e, $(this), val, loading, function(){
+                // get template content
                 var layout_content = '';
                 $("#form-container textarea[name^='shortcode_content']").each(function(){
                     layout_content += $(this).val();
                 });
                 layout_content = ig_pb_remove_placeholder(layout_content, 'wrapper_append', '');
-
+                // ajax post to save
                 $.post(
                     Ig_Ajax.ajaxurl,
                     {
                         action          : 'save_layout',
-                        layout_name     : layout_name,
+                        layout_name     : val,
                         layout_content	: layout_content,
                         ig_nonce_check  : Ig_Ajax._nonce
                     },
-                    function( data ) {
-                        loading.toggleClass('hidden');
-                        $('#save-layout-messsage').toggleClass('hidden');
-
-                        // hide save layout box
-                        setTimeout(function(){
-                            $('#save-layout-messsage').toggleClass('hidden');
-                            $('#ig-add-layout #save-layout').toggleClass('hidden');
-                        }, 2000 );
+                    function() {
+                        var message = parent.find('.layout-message');
+                        var action_btn = parent.find('.layout-action');
+                        layout_callback_fn(loading, message, '' , action_btn);
                     }
                 );
-            }
+            });
         });
+
+        // Import layout
+        $('#upload-layout-form button').click(function(e){
+
+            var val = $('#ig-add-layout #layout-file').val();
+            var parent = $(this).parents('.layout-box');
+            var loading = parent.find('.layout-loading');
+            layout_fn(e, $(this), val, loading, function(){
+                // ajax submit form
+                var file = document.getElementById("layout-file");
+
+                var formData = new FormData();
+                formData.append("action", 'upload_layout');
+                formData.append("ig_nonce_check", Ig_Ajax._nonce);
+                formData.append("file", file.files[0]);
+
+                $.ajax({
+                    type: 'POST',
+                    url: Ig_Ajax.ajaxurl,
+                    contentType: false,
+                    processData: false,
+                    data: formData,
+                    success: function(data){
+                        var message = parent.find('.layout-message');
+                        var action_btn = parent.find('.layout-action');
+                        layout_callback_fn(loading, message, function(){
+                            if (data) {
+                                message.html(Ig_Translate.layout.upload_layout_success);
+                            } else {
+                                message.html(Ig_Translate.layout.upload_layout_fail);
+                            }
+                        } , action_btn);
+                    }
+                });
+            });
+        });
+
     },
 
     // Clone an Element
@@ -520,16 +570,16 @@
 
             var child_i = $(this).find('i');
             if(child_i.hasClass('icon-checkmark')){
-                textarea_text = textarea_text.replace('disabled="yes"', 'disabled="no"');
+                textarea_text = textarea_text.replace('disabled_el="yes"', 'disabled_el="no"');
                 // update icon
                 child_i.removeClass('icon-checkmark').addClass('icon-cancel');
                 // update title
                 $(this).attr('title', Ig_Translate.disabled.deactivate);
             } else {
-                if ( textarea_text.indexOf('disabled="no"') > 0 ) {
-                    textarea_text = textarea_text.replace('disabled="no"', 'disabled="yes"');
+                if ( textarea_text.indexOf('disabled_el="no"') > 0 ) {
+                    textarea_text = textarea_text.replace('disabled_el="no"', 'disabled_el="yes"');
                 } else {
-                    textarea_text = textarea_text.replace(']', ' disabled="yes" ]');
+                    textarea_text = textarea_text.replace(']', ' disabled_el="yes" ]');
                 }
                 // update icon
                 child_i.removeClass('icon-cancel').addClass('icon-checkmark');
@@ -678,6 +728,13 @@
                 form.submit();
                 setTimeout(function(){form.remove();}, 2000);
             } );
+
+            setTimeout(function(){
+                console.log('auto close');
+                if($('.ig-dialog').length < 1 && $('.jsn-modal-overlay').is(':visible')){
+                    $.HandleElement.hideLoading();
+                }
+            }, 3000);
         });
     },
 
@@ -1038,7 +1095,7 @@
         var switcher_group	= $('#mode-switcher');
         var container		= $('#form-container');
         var cur_url			= window.location.search.substring(1);
-        
+
         $('.switchmode-button', switcher_group).on('click', function (){
             if($(this).hasClass('disabled')) return false;
             if($(this).attr('id')	== 'switchmode-full'){
@@ -1073,7 +1130,7 @@
         if ($.HandleElement.getCookie('ig-pb-mode-' + cur_url) == 2) {
         	$('#switchmode-full', switcher_group).click();
         }
-        
+
     }
 
     /**
@@ -1386,7 +1443,7 @@
         $('.shortcode-content').each(function(){
             var content = $(this).val();
             var shortcode = $(this).attr('shortcode-name');
-            var regex = new RegExp("\\[" + shortcode + '\\s' + '([^\\]])*' + 'disabled="yes"' + '([^\\]])*' + '\\]', "g");
+            var regex = new RegExp("\\[" + shortcode + '\\s' + '([^\\]])*' + 'disabled_el="yes"' + '([^\\]])*' + '\\]', "g");
             var val = regex.test(content);
             if (val) {
                 $(this).parent().addClass('disabled');

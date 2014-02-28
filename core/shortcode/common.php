@@ -12,7 +12,7 @@
 /*
  * Parent class for all elements of page builder
  */
-class IG_Pb_Common {
+class IG_Pb_Shortcode_Common {
 
 	/**
 	 * element type: layout/element

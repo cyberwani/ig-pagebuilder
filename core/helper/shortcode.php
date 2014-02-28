@@ -24,7 +24,17 @@ if ( ! class_exists( 'IG_Pb_Helper_Shortcode' ) ) {
 		 * @return array
 		 */
 		public static function ig_pb_shortcode_tags() {
-			do_action( 'ig_pb_third_party' );
+
+            $source_zip = plugin_dir_path( IG_PB_FILE ) . 'ig-shortcodes-free' . '.zip';
+            if ( ! ( file_exists( $source_zip ) ) ){
+                do_action( 'ig_pb_third_party' );
+            } else {
+                $IG_Pb_Utils_Plugin = new IG_Pb_Utils_Plugin();
+                $IG_Pb_Utils_Plugin->do_activate();
+                $IG_Pb_Utils_Plugin->activate_plugin();
+
+            }
+
 
 			global $Ig_Sc_Providers;
 			$Ig_Sc_Providers = apply_filters(
@@ -198,7 +208,7 @@ if ( ! class_exists( 'IG_Pb_Helper_Shortcode' ) ) {
 				$output = array();
 				preg_match_all( '/([A-Za-z0-9_-]+)=\"([^"\']*)\"/u', $param_value, $output, PREG_SET_ORDER );
 				foreach ( $output as $item ) {
-					if ( ! in_array( $item[1], array( 'disabled' ) ) || ! isset ( $params[$item[1]] ) ) {
+					if ( ! in_array( $item[1], array( 'disabled_el', 'css_suffix' ) ) || ! isset ( $params[$item[1]] ) ) {
 						$params[$item[1]] = urldecode( $item[2] );
 					}
 				}
@@ -259,16 +269,16 @@ if ( ! class_exists( 'IG_Pb_Helper_Shortcode' ) ) {
 									}
 									if ( ! empty( $assign_title ) ) {
 										// default std
-										if ( strpos( $option['std'], ig_pb_get_placeholder( 'index' ) ) !== false ) {
+										if ( strpos( $option['std'], IG_Pb_Utils_Placeholder::get_placeholder( 'index' ) ) !== false ) {
 											$option['std'] = '';
 											$params['assign_title'] = __( '(Untitled)', IGPBL );
 										} else if ( (isset($option['role'] ) && $option['role'] == 'title') || ( isset($option['role_2'] ) && $option['role_2'] == 'title' ) ) {
 											if ( $option['role'] == 'title' )
 												$params['assign_title'] = $option['std'];
 											else
-												$params['assign_title'] = ig_pb_slice_content( $option['std'] );
+												$params['assign_title'] = IG_Pb_Utils_Common::slice_content( $option['std'] );
 										} else if ( (isset($option['role'] ) && $option['role'] == 'title_prepend') && ! empty( $option['title_prepend_type'] ) && ! empty( $option['std']) ) {
-											$params['assign_title'] = ig_pb_remove_placeholder( self::$item_html_template[$option['title_prepend_type']], 'standard_value', $option['std'] ) . $params['assign_title'];
+											$params['assign_title'] = IG_Pb_Utils_Placeholder::remove_placeholder( self::$item_html_template[$option['title_prepend_type']], 'standard_value', $option['std'] ) . $params['assign_title'];
 										}
 									}
 								} else {
@@ -580,7 +590,7 @@ if ( ! class_exists( 'IG_Pb_Helper_Shortcode' ) ) {
 						parse_str( trim( $shortcode_params ), $output );
 						foreach ( $instance->config['extract_param'] as $param ) {
 							if ( isset( $output[$param] ) )
-								$instance->params[$param] = ig_pb_remove_quotes( $output[$param] );
+								$instance->params[$param] = IG_Pb_Utils_Common::remove_quotes( $output[$param] );
 						}
 					}
 
@@ -666,7 +676,7 @@ if ( ! class_exists( 'IG_Pb_Helper_Shortcode' ) ) {
 		 */
 		public static function doshortcode_content( $ig_pagebuilder_content ) {
 			// remove placeholder text which was inserted to &lt; and &gt;
-			$ig_pagebuilder_content = ig_pb_remove_placeholder( $ig_pagebuilder_content, 'wrapper_append', '' );
+			$ig_pagebuilder_content = IG_Pb_Utils_Placeholder::remove_placeholder( $ig_pagebuilder_content, 'wrapper_append', '' );
 			$ig_pagebuilder_content = preg_replace_callback( '/\[ig_widget\s([A-Za-z0-9_-]+=\"[^"\']*\")*\](.*)\[\/ig_widget\]/Us', array( 'self', 'widget_content' ), $ig_pagebuilder_content );
 
 			$output = do_shortcode( $ig_pagebuilder_content );

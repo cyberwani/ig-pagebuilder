@@ -323,7 +323,7 @@ if ( ! class_exists( 'IG_Pb_Helper_Type' ) ) {
 		 * @return type
 		 */
 		static function lorem_text( $word_count = 50 ) {
-			return ucfirst( ig_pb_lorem_text( $word_count, true ) );
+			return ucfirst( IG_Pb_Utils_Common::lorem_text( $word_count, true ) );
 		}
 
 		/**

@@ -59,7 +59,7 @@ if ( empty ($elements) || empty ( $elements['element'] ) ) {
 	global $Ig_Pb_Widgets;
 	foreach ( $Ig_Pb_Widgets as $wg_class => $config ) {
 		$extra_ = $config['extra_'];
-		echo balanceTags( IG_Pb_Element::el_button( $extra_, $config ) );
+		echo balanceTags( IG_Pb_Shortcode_Element::el_button( $extra_, $config ) );
 	}
 	?>
 					</ul>

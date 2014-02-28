@@ -14,7 +14,7 @@
  */
 if ( ! class_exists( 'IG_Row' ) ) {
 
-	class IG_Row extends IG_Pb_Layout {
+	class IG_Row extends IG_Pb_Shortcode_Layout {
 
 		public function __construct() {
 			parent::__construct();
@@ -208,6 +208,13 @@ if ( ! class_exists( 'IG_Row' ) ) {
 						'div_padding_right'  => array( 'std' => '10' ),
 						'div_padding_left'   => array( 'std' => '10' ),
 					),
+					array(
+						'name'    => __( 'Css Class suffix', IGPBL ),
+						'id'      => 'css_suffix',
+						'type'    => 'text_field',
+						'std'     => __( '', IGPBL ),
+						'tooltip' => __( 'Add custom css class for the wrapper div of this element', IGPBL ),
+					),
 				)
 			);
 		}
@@ -231,7 +238,7 @@ if ( ! class_exists( 'IG_Row' ) ) {
 			// remove [/ig_row][ig_column...] from $shortcode_data
 			$shortcode_data = explode( '][', $shortcode_data );
 			$shortcode_data = $shortcode_data[0] . ']';
-			$custom_style   = ig_pb_get_placeholder( 'custom_style' );
+			$custom_style   = IG_Pb_Utils_Placeholder::get_placeholder( 'custom_style' );
 			$row[] = '<div class="jsn-row-container ui-sortable row-fluid shortcode-container" ' . $custom_style . '>
 							<textarea class="hidden" data-sc-info="shortcode_content" name="shortcode_content[]" >' . $shortcode_data . '</textarea>
 							<div class="jsn-iconbar left">
@@ -360,7 +367,8 @@ if ( ! class_exists( 'IG_Row' ) ) {
 				$arr_styles = implode( '', $arr_styles );
 				$style = ! empty( $arr_styles ) ? "style='$arr_styles'" : '';
 			}
-
+			$extra_class .= ! empty ( $atts['css_suffix'] ) ? ' ' . esc_attr( $atts['css_suffix'] ) : '';
+			$extra_class  = ltrim( $extra_class, ' ' );
 			return $common_style . "<div class='jsn-bootstrap'>" . "<div class='row $extra_class' $style>" . IG_Pb_Helper_Shortcode::remove_autop( $content ) . '</div>' . '</div>';
 		}
 

@@ -624,7 +624,7 @@
                         $("#reset-search-btn").trigger("click");
                     }
                     else
-                        self.isotopeFilter(filter_select.val(), 'data-type');
+                        self.elementFilter(filter_select.val(), 'data-type');
 
                     $("#jsn-quicksearch-field").focus();
 
@@ -643,9 +643,10 @@
             $('#premade-layout').click(function(e){
                 self.showPopover(box, e, self, $(this));
             });
-            $('#ig-add-layout #save-layout').click(function(e){
+            // toggle Save/Upload layout form
+            $('.layout-action').click(function(e){
                 $(this).toggleClass('hidden');
-                $('#ig-add-layout #save-layout-form').toggleClass('hidden');
+                $(this).next('.layout-toggle-form').toggleClass('hidden');
             });
         },
 
@@ -682,32 +683,33 @@
                     $("#reset-search-btn").hide();
 
                 ///self.filterElement($(el).val(), 'value');
-                self.isotopeFilter($(el).val().toLowerCase());
+                self.elementFilter($(el).val().toLowerCase());
             }, 500);
             $('#ig-add-element .jsn-filter-button').change(function() {
                 ///self.filterElement($(this).val(), 'type');
-                self.isotopeFilter($(this).val(), 'data-type');
+                self.elementFilter($(this).val(), 'data-type');
             })
             $("#reset-search-btn").click(function(){
                 ///self.filterElement("all");
-                self.isotopeFilter('');
+                self.elementFilter('');
                 $(this).hide();
                 $("#jsn-quicksearch-field").val("");
             })
         },
         // animation filter
-        isotopeFilter:function(value, data){
+        elementFilter:function(value, data){
             var $container = $('#ig-add-element .jsn-items-list');
-            var selector = '#ig-add-element .jsn-items-list .jsn-item';
+            var selector = '.jsn-item';
+            var item = selector;
             if(data == null) data = 'data-value';
             if(value != '' && value != 'all')
                 selector += '['+data+'*="'+value+'"]';
             if(data == 'data-value'){
                 selector += '[data-type="'+$('#ig-add-element select.jsn-filter-button').val()+'"]';
             }
-            $container.isotope({
-                filter: selector
-            });
+            $container.find(item).fadeOut(100);
+            $container.find(selector).fadeIn();
+
         },
 
         // Filter elements in "Add Element" Box

@@ -592,7 +592,7 @@ input:checked + .radio_image{
 #ig-add-layout a{
     color: #333;
 }
-#ig-add-layout a:hover, #ig-add-layout #save-layout-messsage{
+#ig-add-layout a:hover, #ig-add-layout .layout-message{
     color: #0099FF;
     text-decoration: none;
 }

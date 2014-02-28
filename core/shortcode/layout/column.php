@@ -14,7 +14,7 @@
  */
 if ( ! class_exists( 'IG_Column' ) ) {
 
-	class IG_Column extends IG_Pb_Layout {
+	class IG_Column extends IG_Pb_Shortcode_Layout {
 
 		public function __construct() {
 			parent::__construct();
@@ -46,7 +46,7 @@ if ( ! class_exists( 'IG_Column' ) ) {
 			$column_html    = empty($content) ? '' : IG_Pb_Helper_Shortcode::do_shortcode_admin( $content, true );
 			$span           = ( ! empty($this->params['span'] ) ) ? $this->params['span'] : 'span12';
 			$shortcode_data = '[' . $this->config['shortcode'] . ' span="' . $span . '"]';
-			$rnd_id         = ig_pb_generate_random_string();
+			$rnd_id         = IG_Pb_Utils_Common::random_string();
 			$column[] = '<div class="jsn-column-container clearafter shortcode-container ">
 							<div class="jsn-column ' . $span . '">
 								<div class="thumbnail clearafter">

@@ -13,7 +13,7 @@
  * Parent class for sub elements
  */
 
-class IG_Pb_Child extends IG_Pb_Element {
+class IG_Pb_Shortcode_Child extends IG_Pb_Shortcode_Element {
 
 	public function element_in_pgbldr( $content = '', $shortcode_data = '', $el_title = '' ) {
 		$this->config['sub_element'] = true;

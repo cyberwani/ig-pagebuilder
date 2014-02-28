@@ -23,8 +23,11 @@ if ( ! class_exists( 'IG_Pb_Helper_Functions' ) ) {
 				'delete_row'       => __( 'Are you sure you want to delete the whole row including all elements it contains?', IGPBL ),
 				'delete_column'    => __( 'Are you sure you want to delete the whole column including all elements it contains?', IGPBL ),
 				'delete_element'   => __( 'Are you sure you want to delete the element?', IGPBL ),
-				'table1'		   => __( "A table must has atleast 1 columns. You can't remove this column", IGPBL ),
-				'table2'		   => __( "A table must has atleast 2 rows. You can't remove this row", IGPBL ),
+				'table'       => array(
+					'table1'		   => __( "A table must has atleast 1 columns. You can't remove this column", IGPBL ),
+					'table2'		   => __( "A table must has atleast 2 rows. You can't remove this row", IGPBL ),
+					'table3'		   => __( "Row span/Column span can't be negative", IGPBL ),
+				),
 				'saving'		   => __( 'Saving content! Please wait a moment.', IGPBL ),
 				'error_tinymce'		   => __( 'Having error on loading TinyMCE.', IGPBL ),
 				'settings'		 => __( 'Settings', IGPBL ),
@@ -88,6 +91,10 @@ if ( ! class_exists( 'IG_Pb_Helper_Functions' ) ) {
 				),
 				'button' => array(
 					'select' => __( 'Select', IGPBL ),
+				),
+				'layout' => array(
+					'upload_layout_success' => __( 'Upload successfully', IGPBL ),
+					'upload_layout_fail' => __( 'Upload fail', IGPBL ),
 				)
 			);
 
@@ -106,7 +113,7 @@ if ( ! class_exists( 'IG_Pb_Helper_Functions' ) ) {
 			$js_files = array_merge( $extra_js ? $this_->config['exception'][$extra] : array(), array( str_replace( 'ig_', '', $this_->config['shortcode'] ) . $post_fix ) );
 			foreach ( $js_files as $js_file ) {
 				if ( wp_script_is( $js_file, 'enqueued' ) ) {
-					IG_Pb_Assets::load( $js_file );
+					IG_Pb_Assets_Load::load( $js_file );
 				}
 				else {
 					global $Ig_Sc_By_Providers;
@@ -205,13 +212,22 @@ if ( ! class_exists( 'IG_Pb_Helper_Functions' ) ) {
 		 * @param unknown $js_file
 		 */
 		static private function asset_enqueue_( $file_uri, $js_file, $file_path ) {
+			$enqueue = 0;
 			if ( is_admin() ) {
+				$enqueue = 1;
+			} else {
+				$ig_pb_cache_status = get_option( 'ig_pb_cache_status', false );
+				if ( $ig_pb_cache_status != 'disable' ) {
+					self::store_assets_info( preg_replace( '/[_.]/', '-', $js_file ), $file_uri, $file_path );
+				} else {
+					$enqueue = 1;
+				}
+			}
+			if ( $enqueue ) {
 				if ( strpos( $file_uri, '.js' ) !== false )
 					wp_enqueue_script( preg_replace( '/[_.]/', '-', $js_file ), $file_uri );
 				else
 					wp_enqueue_style( preg_replace( '/[_.]/', '-', $js_file ), $file_uri );
-			} else {
-				self::store_assets_info( preg_replace( '/[_.]/', '-', $js_file ), $file_uri, $file_path );
 			}
 		}
 
@@ -475,20 +491,20 @@ if ( ! class_exists( 'IG_Pb_Helper_Functions' ) ) {
 
 		// common scripts register at first
 		public static function enqueue_scripts() {
-			IG_Pb_Assets::load( array( 'jquery', 'jquery-ui', 'jquery-ui-resizable', 'jquery-ui-sortable', 'jquery-ui-tabs', 'jquery-ui-dialog', 'jquery-ui-button', 'jquery-ui-slider', 'ig-pb-jquery-tipsy-js', 'ig-pb-bootstrap-js', 'ig-pb-jquery-easing-js' ) );
+			IG_Pb_Assets_Load::load( array( 'jquery', 'jquery-ui', 'jquery-ui-resizable', 'jquery-ui-sortable', 'jquery-ui-tabs', 'jquery-ui-dialog', 'jquery-ui-button', 'jquery-ui-slider', 'ig-pb-jquery-tipsy-js', 'ig-pb-bootstrap-js', 'ig-pb-jquery-easing-js' ) );
 		}
 
 		// common Handle Element, Modal scripts
 		public static function enqueue_scripts_end() {
-			IG_Pb_Assets::load( 'ig-pb-modal-js' );
-			IG_Pb_Assets::load( 'ig-pb-handleelement-js' );
+			IG_Pb_Assets_Load::load( 'ig-pb-modal-js' );
+			IG_Pb_Assets_Load::load( 'ig-pb-handleelement-js' );
 			add_action( 'ig_pb_assets_localize', array( __CLASS__, 'ig_localize' ) );
 		}
 
 		// common styles
 		public static function enqueue_styles() {
 			add_filter( 'ig_pb_assets_register', array( __CLASS__, 'register_assets' ) );
-			IG_Pb_Assets::load( array( 'ig-bootstrap-css', 'ig-pb-jquery-ui-css', 'ig-pb-joomlashine-css', 'ig-pb-font-icomoon-css', 'ig-pb-jquery-select2-css', 'ig-pb-admin-css' ) );
+			IG_Pb_Assets_Load::load( array( 'ig-pb-jquery-ui-css', 'ig-pb-joomlashine-css', 'ig-pb-font-icomoon-css', 'ig-pb-jquery-select2-css', 'ig-pb-admin-css' ) );
 		}
 
 		// register some custom assets
@@ -549,7 +565,7 @@ if ( ! class_exists( 'IG_Pb_Helper_Functions' ) ) {
 			$Ig_Pb_Widgets = array();
 			$widgets       = IG_Pb_Helper_Functions::list_widgets();
 			foreach ( $widgets as $id => $widget ) {
-				if ( $widget['class'] == 'IG_Pb_Widget' )
+				if ( $widget['class'] == 'IG_Pb_Objects_Widget' )
 					continue;
 				$config = array(
 					'shortcode'     => $widget['class'],
@@ -598,12 +614,12 @@ if ( ! class_exists( 'IG_Pb_Helper_Functions' ) ) {
 					<div class="jsn-overlay jsn-bgimage image-loading-24"></div>
 				</div>';
 			}
-			$extra_class  = ig_pb_get_placeholder( 'extra_class' );
-			$custom_style = ig_pb_get_placeholder( 'custom_style' );
+			$extra_class  = IG_Pb_Utils_Placeholder::get_placeholder( 'extra_class' );
+			$custom_style = IG_Pb_Utils_Placeholder::get_placeholder( 'custom_style' );
 			$other_class  = '';
 
 			if ( ! empty( $this_ ) ) {
-				$match = preg_match( "/\[$shortcode" . '\s' . '([^\]])*' . 'disabled="yes"'. '([^\]])*' . '\]/', $shortcode_data );
+				$match = preg_match( "/\[$shortcode" . '\s' . '([^\]])*' . 'disabled_el="yes"'. '([^\]])*' . '\]/', $shortcode_data );
 				if ( $match ) {
 						$other_class = 'disabled';
 				}
@@ -638,7 +654,7 @@ if ( ! class_exists( 'IG_Pb_Helper_Functions' ) ) {
 		 * @param type $sub_dir
 		 * @return type
 		 */
-		static function get_wp_upload_folder( $sub_dir = '' ) {
+		static function get_wp_upload_folder( $sub_dir = '', $auto_create = true ) {
 			$upload_dir = wp_upload_dir();
 			if ( is_array( $upload_dir ) && isset ( $upload_dir['basedir'] ) ) {
 				$upload_dir = $upload_dir['basedir'];
@@ -648,7 +664,7 @@ if ( ! class_exists( 'IG_Pb_Helper_Functions' ) ) {
 					mkdir( $upload_dir );
 				}
 			}
-			if ( ! is_dir( $upload_dir . $sub_dir ) ) {
+			if ( $auto_create && ! is_dir( $upload_dir . $sub_dir ) ) {
 				mkdir( $upload_dir . $sub_dir, 0777, true );
 			}
 			return $upload_dir . $sub_dir;
@@ -666,125 +682,6 @@ if ( ! class_exists( 'IG_Pb_Helper_Functions' ) ) {
 				return $upload_dir['baseurl'] . $sub_dir;
 			} else {
 				return WP_CONTENT_URL . '/uploads' . $sub_dir;
-			}
-		}
-
-		/**
-		 * save premade layouts file
-		 * @param type $layout_name
-		 * @param type $layout_content
-		 */
-		static function save_premade_layouts( $layout_name, $layout_content ) {
-			$upload_dir = self::get_wp_upload_folder( '/ig-pb-user-layout' );
-
-			$layout_name = preg_replace( '/([\[\]])*/', '',  $layout_name );
-			$file = $upload_dir . '/layout-' . time() . '.tpl';
-			$fp = fopen( $file, 'w' );
-			fwrite( $fp, "[ig_layout_tile $layout_name]" );
-			fwrite( $fp, $layout_content );
-			fclose( $fp );
-		}
-
-		/**
-		 * get name of premade layouts file
-		 */
-		static function get_premade_layouts() {
-			$upload_dir = self::get_wp_upload_folder( '/ig-pb-user-layout' );
-			$files = array();
-			$dirs = array( $upload_dir, IG_PB_PREMADE_LAYOUT );
-			foreach ( $dirs as $dir ) {
-				foreach ( glob( $dir . '/*.tpl' ) as $filename ) {
-					$prefix = ( ( $dir == IG_PB_PREMADE_LAYOUT ) ? 'ig_pb' : 'user' ) . '_layout';
-					if ( ! isset ( $files[$prefix] ) ) {
-						$files[$prefix] = array();
-					}
-					$files[$prefix][basename( $filename )] = $filename;
-				}
-			}
-			return $files;
-		}
-
-		/**
-		 * get name of premade layouts file
-		 */
-		static function show_premade_layouts() {
-			$files = self::get_premade_layouts();
-			ob_start();
-			?>
-			<?php
-			foreach ( $files as $provider  => $layouts ) {
-				foreach ( $layouts as $name => $path ) {
-					$layout_name = self::extract_layout_data( $path, 'name' );
-					if ( empty ( $layout_name ) ) {
-						continue;
-					}
-					$content = "<textarea class='hidden'>" . self::extract_layout_data( $path, 'content' ) . '</textarea>';
-					if ( $provider == 'ig_pb_layout' ) {
-						$thumbnail = 'default.png';
-						$strip_ext = str_replace( '.tpl', '', $name );
-						if ( file_exists( IG_PB_PREMADE_LAYOUT . "/$strip_ext.png" ) ) {
-							$thumbnail = $strip_ext . '.png';
-						}
-						$layout_thumb = IG_PB_PREMADE_LAYOUT_URI . "/$thumbnail";
-						echo balanceTags(
-							"<li class='jsn-item $provider' data-type='$provider' >
-								<a class='template-item-thumb premade-layout-item' data-id='$name' href='javascript:;'>
-									<span class='thumbnail'>
-										<img src='$layout_thumb' alt='$layout_name' align='center'>
-									</span>
-									<span>$layout_name</span>
-									$content
-								</a>
-							</li>"
-						);
-					} else {
-						$class = 'hidden';
-						echo balanceTags(
-							"<li class='jsn-item $provider $class' data-type='$provider' >
-								<button data-id='$name' class='premade-layout-item btn'>$layout_name $content</button>
-
-							</li>"
-						);
-					}
-				}
-			}
-			?>
-			<?php
-			$content = ob_get_clean();
-			echo balanceTags( $content );
-		}
-
-		/**
-		 * get content of premade layouts file, prinrt as template
-		 */
-		static function print_premade_layouts() {
-			$files = self::get_premade_layouts();
-			foreach ( $files as $provider  => $layouts ) {
-				foreach ( $layouts as $name => $path ) {
-					$content = self::extract_layout_data( $path, 'content' );
-					echo balanceTags( "<script type='text/html' id='tmpl-layout-$name'>\n$content\n</script>\n" );
-				}
-			}
-		}
-
-		/**
-		 * Read file line by line
-		 *
-		 * @param type $path
-		 * @return type
-		 */
-		static function extract_layout_data( $path, $data ){
-			$fp = @fopen( $path, 'r' );
-			if ( $fp ) {
-				$contents = fread( $fp, filesize( $path ) );
-				$pattern  = '/\[ig_layout_tile\s([^\]]+)\]/';
-				fclose( $fp );
-				if ( $data == 'name' ) {
-					preg_match( $pattern, $contents, $matches );
-					return $matches[1];
-				} else if ( $data == 'content' ) {
-					return preg_replace( $pattern, '', $contents );
-				}
 			}
 		}
 
@@ -842,11 +739,40 @@ if ( ! class_exists( 'IG_Pb_Helper_Functions' ) ) {
          * @param type $icon
          */
 		static function heading_icon( &$heading, &$icon, $heading_empty = false ) {
-			if ( strpos( $heading, ig_pb_get_placeholder( 'index' ) ) !== false ) {
+			if ( strpos( $heading, IG_Pb_Utils_Placeholder::get_placeholder( 'index' ) ) !== false ) {
 				$heading = '';
 			}
 			if ( empty ( $icon ) && empty ( $heading ) )
 				$heading = ! $heading_empty ? __( '(Untitled)', IGPBL ) : '';
+		}
+
+		/**
+		 * Show alert box
+		 *
+		 * @param unknown $mgs
+		 */
+		static function alert_msg( $mgs ) {
+			?>
+            <div class="alert alert-<?php echo balanceTags( $mgs[0] ); ?>"><?php echo balanceTags( $mgs[1] ); ?></div>
+            <?php
+		}
+
+		/**
+         * Load bootstrap 3, replace bootstrap 2
+         * @param type $assets
+         * @return string
+         */
+		static function load_bootstrap_3( &$assets ) {
+			if ( ! is_admin() || IG_Pb_Helper_Functions::is_preview() ) {
+				$assets['ig-pb-bootstrap-css'] = array(
+					'src' => IG_Pb_Helper_Functions::path( 'assets/3rd-party/bootstrap3' ) . '/css/bootstrap.min.css',
+					'ver' => '3.0.2',
+				);
+				$assets['ig-pb-bootstrap-js'] = array(
+					'src' => IG_Pb_Helper_Functions::path( 'assets/3rd-party/bootstrap3' ) . '/js/bootstrap.min.js',
+					'ver' => '3.0.2',
+				);
+			}
 		}
 	}
 

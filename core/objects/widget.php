@@ -9,9 +9,9 @@
  * Websites: http://www.www.innogears.com
  * Technical Support:  Feedback - http://www.www.innogears.com
  */
-if ( ! class_exists( 'IG_Pb_Widget' ) ) {
+if ( ! class_exists( 'IG_Pb_Objects_Widget' ) ) {
 
-	class IG_Pb_Widget extends WP_Widget {
+	class IG_Pb_Objects_Widget extends WP_Widget {
 
 		var $ig_widget_cssclass;
 		var $ig_widget_description;
@@ -24,7 +24,7 @@ if ( ! class_exists( 'IG_Pb_Widget' ) ) {
 		 * @access public
 		 * @return void
 		 */
-		function IG_Pb_Widget() {
+		function IG_Pb_Objects_Widget() {
 			$this->ig_widget_cssclass    = 'ig-widget-pagebuilder';
 			$this->ig_widget_description = __( 'Presentation of any PageBuilder element', IGPBL );
 			$this->ig_widget_idbase      = 'ig_widget_pagebuilder';

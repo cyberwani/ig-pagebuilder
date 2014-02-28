@@ -146,7 +146,7 @@
 
         // Number field: only allow to type number
         $("#modalOptions input[type='number']").bind(input_action, function (event) {
-            $.HandleSetting.regexTestInput(event, "^[0-9\b]+$");
+            $.HandleSetting.regexTestInput(event, "^[0-9\b\-]+$");
         });
         // Doesn't allow 0 in items_per_ input field
         $("#modalOptions input[id*='items_per']").bind(input_action, function (event) {
@@ -154,6 +154,14 @@
             var val = regex.test($(this).val());
             if(!val){
                 $(this).val('1');
+            }
+        });
+
+        // positive value
+        $('.positive-val').bind(input_action, function (event) {
+            var this_val = $(this).val();
+            if(parseInt(this_val) <= 0){
+                $(this).val(1);
             }
         });
     }

@@ -91,7 +91,7 @@ if ( ! class_exists( 'IG_Pb_Helper_Html' ) ) {
 				$styles = "style = '" . implode( ';', $styles ) . "'";
 			}else
 				$styles = '';
-			$output  = ig_pb_remove_placeholder( $output, 'custom_style', $styles );
+			$output  = IG_Pb_Utils_Placeholder::remove_placeholder( $output, 'custom_style', $styles );
 			return $output;
 		}
 
